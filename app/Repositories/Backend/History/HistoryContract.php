@@ -1,57 +1,112 @@
-<?php namespace App\Repositories\Backend\History;
+<?php
 
-use App\Models\History\History;
+namespace App\Repositories\Backend\History;
 
 /**
- * Interface HistoryContract
- * @package App\Repositories\Backend\History
+ * Interface HistoryContract.
  */
-interface HistoryContract {
+interface HistoryContract
+{
+    /**
+     * @param $type
+     *
+     * @return mixed
+     */
+    public function withType($type);
 
-	/**
-	 * @param $type
-	 * @param $text
-	 * @param null $entity_id
-	 * @param null $icon
-	 * @param null $class
-	 * @param null $assets
-	 * @return mixed
-	 */
-	public function log($type, $text, $entity_id = null, $icon = null, $class = null,  $assets = null);
+    /**
+     * @param $text
+     *
+     * @return mixed
+     */
+    public function withText($text);
 
-	/**
-	 * @return mixed
-	 */
-	public function render();
+    /**
+     * @param $entity_id
+     *
+     * @return mixed
+     */
+    public function withEntity($entity_id);
 
-	/**
-	 * @param $type
-	 * @return mixed
-	 */
-	public function renderType($type);
+    /**
+     * @param $icon
+     *
+     * @return mixed
+     */
+    public function withIcon($icon);
 
-	/**
-	 * @param $entity_id
-	 * @return mixed
-	 */
-	public function renderEntity($entity_id);
+    /**
+     * @param $class
+     *
+     * @return mixed
+     */
+    public function withClass($class);
 
-	/**
-	 * @param $text
-	 * @param bool $assets
-	 * @return mixed
-	 */
-	public function renderDescription($text, $assets = false);
+    /**
+     * @param $assets
+     *
+     * @return mixed
+     */
+    public function withAssets($assets);
 
-	/**
-	 * @param $items
-	 * @return mixed
-	 */
-	public function buildList($items);
+    /**
+     * @return mixed
+     */
+    public function log();
 
-	/**
-	 * @param History $history
-	 * @return mixed
-	 */
-	public function buildItem(History $history);
+    /**
+     * @param null $limit
+     * @param bool $paginate
+     * @param int  $pagination
+     *
+     * @return mixed
+     */
+    public function render($limit = null, $paginate = true, $pagination = 10);
+
+    /**
+     * @param $type
+     * @param null $limit
+     * @param bool $paginate
+     * @param int  $pagination
+     *
+     * @return mixed
+     */
+    public function renderType($type, $limit = null, $paginate = true, $pagination = 10);
+
+    /**
+     * @param $type
+     * @param $entity_id
+     * @param null $limit
+     * @param bool $paginate
+     * @param int  $pagination
+     *
+     * @return mixed
+     */
+    public function renderEntity($type, $entity_id, $limit = null, $paginate = true, $pagination = 10);
+
+    /**
+     * @param $text
+     * @param bool $assets
+     *
+     * @return mixed
+     */
+    public function renderDescription($text, $assets = false);
+
+    /**
+     * @param $history
+     * @param bool $paginate
+     *
+     * @return mixed
+     */
+    public function buildList($history, $paginate = true);
+
+    /**
+     * @param $query
+     * @param $limit
+     * @param $paginate
+     * @param $pagination
+     *
+     * @return mixed
+     */
+    public function buildPagination($query, $limit, $paginate, $pagination);
 }

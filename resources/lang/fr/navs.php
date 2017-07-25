@@ -14,20 +14,23 @@ return [
     */
 
     'general' => [
-        'home' => 'Accueil',
+        'home'   => 'Accueil',
         'logout' => 'Déconnexion',
     ],
 
     'frontend' => [
+        'contact' => 'Contact',
         'dashboard' => 'Tableau de bord',
-        'login' => 'Connexion',
-        'macros' => 'Macros',
-        'register' => "S'enregistrer",
+        'login'     => 'Connexion',
+        'macros'    => 'Macros',
+        'register'  => "S'enregistrer",
 
         'user' => [
-            'administration' => 'Administration',
+            'account'         => 'Mon compte',
+            'administration'  => 'Administration',
             'change_password' => 'Changer mon mot de passe',
-            'my_information' => 'Mes informations',
+            'my_information'  => 'Mes informations',
+            'profile'         => 'Profil',
         ],
     ],
 ];

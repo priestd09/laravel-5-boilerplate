@@ -1,33 +1,33 @@
 <?php
 
+use Database\TruncateTable;
 use Carbon\Carbon as Carbon;
 use Illuminate\Database\Seeder;
+use Database\DisableForeignKeys;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class UserTableSeeder
+ * Class UserTableSeeder.
  */
 class UserTableSeeder extends Seeder
 {
+    use DisableForeignKeys, TruncateTable;
+
+    /**
+     * Run the database seed.
+     *
+     * @return void
+     */
     public function run()
     {
-        if (DB::connection()->getDriverName() == 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        }
-
-        if (DB::connection()->getDriverName() == 'mysql') {
-            DB::table(config('access.users_table'))->truncate();
-        } elseif (DB::connection()->getDriverName() == 'sqlite') {
-            DB::statement('DELETE FROM ' . config('access.users_table'));
-        } else {
-            //For PostgreSQL or anything else
-            DB::statement('TRUNCATE TABLE ' . config('access.users_table') . ' CASCADE');
-        }
+        $this->disableForeignKeys();
+        $this->truncateMultiple([config('access.users_table'), 'social_logins']);
 
         //Add the master administrator, user id of 1
         $users = [
             [
-                'name'              => 'Admin Istrator',
+                'first_name'        => 'Admin',
+                'last_name'         => 'Istrator',
                 'email'             => 'admin@admin.com',
                 'password'          => bcrypt('1234'),
                 'confirmation_code' => md5(uniqid(mt_rand(), true)),
@@ -36,7 +36,8 @@ class UserTableSeeder extends Seeder
                 'updated_at'        => Carbon::now(),
             ],
             [
-                'name'              => 'Backend User',
+                'first_name'        => 'Backend',
+                'last_name'         => 'User',
                 'email'             => 'executive@executive.com',
                 'password'          => bcrypt('1234'),
                 'confirmation_code' => md5(uniqid(mt_rand(), true)),
@@ -45,7 +46,8 @@ class UserTableSeeder extends Seeder
                 'updated_at'        => Carbon::now(),
             ],
             [
-                'name'              => 'Default User',
+                'first_name'        => 'Default',
+                'last_name'         => 'User',
                 'email'             => 'user@user.com',
                 'password'          => bcrypt('1234'),
                 'confirmation_code' => md5(uniqid(mt_rand(), true)),
@@ -57,8 +59,6 @@ class UserTableSeeder extends Seeder
 
         DB::table(config('access.users_table'))->insert($users);
 
-        if (DB::connection()->getDriverName() == 'mysql') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        }
+        $this->enableForeignKeys();
     }
 }

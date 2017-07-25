@@ -1,10 +1,10 @@
-@extends ('backend.layouts.master')
+@extends ('backend.layouts.app')
 
 @section ('title', trans('labels.backend.access.roles.management'))
 
-@section('after-styles-end')
-    {{ Html::style("css/backend/plugin/datatables/dataTables.bootstrap.min.css") }}
-@stop
+@section('after-styles')
+    {{ Html::style("https://cdn.datatables.net/v/bs/dt-1.10.15/datatables.min.css") }}
+@endsection
 
 @section('page-header')
     <h1>{{ trans('labels.backend.access.roles.management') }}</h1>
@@ -16,7 +16,7 @@
             <h3 class="box-title">{{ trans('labels.backend.access.roles.management') }}</h3>
 
             <div class="box-tools pull-right">
-                @include('backend.access.includes.partials.header-buttons')
+                @include('backend.access.includes.partials.role-header-buttons')
             </div>
         </div><!-- /.box-header -->
 
@@ -48,28 +48,36 @@
             {!! history()->renderType('Role') !!}
         </div><!-- /.box-body -->
     </div><!--box box-success-->
-@stop
+@endsection
 
-@section('after-scripts-end')
-    {{ Html::script("js/backend/plugin/datatables/jquery.dataTables.min.js") }}
-    {{ Html::script("js/backend/plugin/datatables/dataTables.bootstrap.min.js") }}
+@section('after-scripts')
+    {{ Html::script("https://cdn.datatables.net/v/bs/dt-1.10.15/datatables.min.js") }}
+    {{ Html::script("js/backend/plugin/datatables/dataTables-extend.js") }}
 
     <script>
         $(function() {
             $('#roles-table').DataTable({
-                processing: true,
+                dom: 'lfrtip',
+                processing: false,
                 serverSide: true,
-                ajax: '{{ route("admin.access.role.get") }}',
+                autoWidth: false,
+                ajax: {
+                    url: '{{ route("admin.access.role.get") }}',
+                    type: 'post',
+                    error: function (xhr, err) {
+                        if (err === 'parsererror')
+                            location.reload();
+                    }
+                },
                 columns: [
-                    {data: 'name', name: 'name'},
-                    {data: 'permissions', name: 'permissions'},
-                    {data: 'users', name: 'users'},
-                    {data: 'sort', name: 'sort'},
-                    {data: 'actions', name: 'actions'}
+                    {data: 'name', name: '{{config('access.roles_table')}}.name'},
+                    {data: 'permissions', name: '{{config('access.permissions_table')}}.display_name', sortable: false},
+                    {data: 'users', name: 'users', searchable: false},
+                    {data: 'sort', name: '{{config('access.roles_table')}}.sort'},
+                    {data: 'actions', name: 'actions', searchable: false, sortable: false}
                 ],
-                order: [[3, "asc"]],
-                searchDelay: 500
+                order: [[3, "asc"]]
             });
         });
     </script>
-@stop
+@endsection

@@ -21,13 +21,24 @@ return [
         ],
 
         'users' => [
-            'confirmation_email' => 'En ny bekræftelsesmail er blevet sendt til adressen for brugeren.',
-            'created' => 'Brugeren blev oprettet.',
-            'deleted' => 'Brugeren blev slettet.',
+            'cant_resend_confirmation' => 'The application is currently set to manually approve users.',
+            'confirmation_email'  => 'En ny bekræftelsesmail er blevet sendt til adressen for brugeren.',
+            'confirmed'              => 'The user was successfully confirmed.',
+            'created'             => 'Brugeren blev oprettet.',
+            'deleted'             => 'Brugeren blev slettet.',
             'deleted_permanently' => 'Brugeren blev slettet permanent.',
-            'restored' => 'Brugeren blev genskabt.',
-            'updated' => 'Brugeren blev opdateret.',
-            'updated_password' => "Brugerens adgangskode blev opdateret.",
-        ]
+            'restored'            => 'Brugeren blev genskabt.',
+            'session_cleared'      => "The user's session was successfully cleared.",
+            'social_deleted' => 'Social Account Successfully Removed',
+            'unconfirmed' => 'The user was successfully un-confirmed',
+            'updated'             => 'Brugeren blev opdateret.',
+            'updated_password'    => 'Brugerens adgangskode blev opdateret.',
+        ],
+    ],
+
+    'frontend' => [
+        'contact' => [
+            'sent' => 'Your information was successfully sent. We will respond back to the e-mail provided as soon as we can.',
+        ],
     ],
 ];

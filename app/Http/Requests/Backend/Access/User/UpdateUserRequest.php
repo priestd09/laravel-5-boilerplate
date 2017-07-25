@@ -5,8 +5,7 @@ namespace App\Http\Requests\Backend\Access\User;
 use App\Http\Requests\Request;
 
 /**
- * Class UpdateUserRequest
- * @package App\Http\Requests\Backend\Access\User
+ * Class UpdateUserRequest.
  */
 class UpdateUserRequest extends Request
 {
@@ -17,7 +16,7 @@ class UpdateUserRequest extends Request
      */
     public function authorize()
     {
-        return access()->allow('manage-users');
+        return access()->hasRole(1);
     }
 
     /**
@@ -28,8 +27,9 @@ class UpdateUserRequest extends Request
     public function rules()
     {
         return [
-            'email' => 'required|email',
-            'name'  => 'required',
+            'email' => 'required|email|max:191',
+            'first_name'  => 'required|max:191',
+            'last_name'  => 'required|max:191',
         ];
     }
 }

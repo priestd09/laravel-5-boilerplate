@@ -21,13 +21,24 @@ return [
         ],
 
         'users' => [
-            'confirmation_email' => 'Eine Aktivierungsmail wurde an die angegebene E-Mailadresse gesendet.',
-            'created' => 'Benutzer erstellt.',
-            'deleted' => 'Benutzer gelöscht.',
+            'cant_resend_confirmation' => 'The application is currently set to manually approve users.',
+            'confirmation_email'  => 'Eine Aktivierungsmail wurde an die angegebene E-Mailadresse gesendet.',
+            'confirmed'              => 'The user was successfully confirmed.',
+            'created'             => 'Benutzer erstellt.',
+            'deleted'             => 'Benutzer gelöscht.',
             'deleted_permanently' => 'Benutzer permanent gelöscht.',
-            'restored' => 'Benutzer wiederhergestellt.',
-            'updated' => 'Benutzer aktualisiert.',
-            'updated_password' => 'Passwort des Benutzers aktualisiert.',
-        ]
+            'restored'            => 'Benutzer wiederhergestellt.',
+            'session_cleared'      => "The user's session was successfully cleared.",
+            'social_deleted' => 'Social Account Successfully Removed',
+            'unconfirmed' => 'The user was successfully un-confirmed',
+            'updated'             => 'Benutzer aktualisiert.',
+            'updated_password'    => 'Kennwort des Benutzers aktualisiert.',
+        ],
+    ],
+
+    'frontend' => [
+        'contact' => [
+            'sent' => 'Your information was successfully sent. We will respond back to the e-mail provided as soon as we can.',
+        ],
     ],
 ];

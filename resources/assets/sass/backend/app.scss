@@ -1,12 +1,16 @@
+// Fonts
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i");
+
 @import "variable-overrides";
-@import "../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
-@import "../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
-@import "../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables";
-@import '../../../../node_modules/font-awesome/scss/font-awesome';
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "~font-awesome/scss/font-awesome";
 
 @import "variables";
 @import "core";
 @import "mixins";
+
+// Helpers
+@import "../helpers";
 
 @import "header";
 @import "sidebar";
@@ -32,8 +36,7 @@
 @import "carousel";
 @import "modal";
 
-//PAGES
-//------
+// Pages
 @import "mailbox";
 @import "lockscreen";
 @import "login_and_register";
@@ -42,13 +45,15 @@
 
 @import "fullcalendar";
 
-//SKINS
+// Skins
 @import "skins/_all-skins";
 
-//OTHER
+// Other
 @import "custom";
 
-//Miscellaneous
-//-------------
+// Miscellaneous
 @import "miscellaneous";
 @import "print";
+
+// Plugins
+@import "../plugin/sweetalert/sweetalert.scss";

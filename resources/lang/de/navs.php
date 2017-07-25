@@ -14,20 +14,23 @@ return [
     */
 
     'general' => [
-        'home' => 'Startseite',
-        'logout' => 'Logout',
+        'home'   => 'Startseite',
+        'logout' => 'Abmelden',
     ],
 
     'frontend' => [
+        'contact' => 'Contact',
         'dashboard' => 'Dashboard',
-        'login' => 'Login',
-        'macros' => 'Makros',
-        'register' => 'Registrieren',
+        'login'     => 'Anmelden',
+        'macros'    => 'Makros',
+        'register'  => 'Registrieren',
 
         'user' => [
-            'administration' => 'Administration',
-            'change_password' => 'Passwort ändern',
-            'my_information' => 'Meine Informationen',
+            'account'         => 'Mein Konto',
+            'administration'  => 'Administration',
+            'change_password' => 'Kennwort ändern',
+            'my_information'  => 'Meine Informationen',
+            'profile'         => 'Profile',
         ],
     ],
 ];

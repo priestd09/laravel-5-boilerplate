@@ -8,49 +8,91 @@
                 <img src="{{ access()->user()->picture }}" class="img-circle" alt="User Image" />
             </div><!--pull-left-->
             <div class="pull-left info">
-                <p>{{ access()->user()->name }}</p>
+                <p>{{ access()->user()->full_name }}</p>
                 <!-- Status -->
                 <a href="#"><i class="fa fa-circle text-success"></i> {{ trans('strings.backend.general.status.online') }}</a>
             </div><!--pull-left-->
         </div><!--user-panel-->
 
         <!-- search form (Optional) -->
-        <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-                  <input type="text" name="q" class="form-control" placeholder="{{ trans('strings.backend.general.search_placeholder') }}" />
-                  <span class="input-group-btn">
-                    <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
-                  </span>
-            </div><!--input-group-->
-        </form>
-        <!-- /.search form -->
+        {{ Form::open(['route' => 'admin.search.index', 'method' => 'get', 'class' => 'sidebar-form']) }}
+        <div class="input-group">
+            {{ Form::text('q', Request::get('q'), ['class' => 'form-control', 'required' => 'required', 'placeholder' => trans('strings.backend.general.search_placeholder')]) }}
+
+            <span class="input-group-btn">
+                    <button type='submit' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
+                  </span><!--input-group-btn-->
+        </div><!--input-group-->
+    {{ Form::close() }}
+    <!-- /.search form -->
 
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu">
             <li class="header">{{ trans('menus.backend.sidebar.general') }}</li>
 
-            <!-- Optionally, you can add icons to the links -->
-            <li class="{{ Active::pattern('admin/dashboard') }}">
-                {{ link_to_route('admin.dashboard', trans('menus.backend.sidebar.dashboard')) }}
+            <li class="{{ active_class(Active::checkUriPattern('admin/dashboard')) }}">
+                <a href="{{ route('admin.dashboard') }}">
+                    <i class="fa fa-dashboard"></i>
+                    <span>{{ trans('menus.backend.sidebar.dashboard') }}</span>
+                </a>
             </li>
 
-            @permission('manage-users')
-                <li class="{{ Active::pattern('admin/access/*') }}">
-                    {{ link_to_route('admin.access.user.index', trans('menus.backend.access.title')) }}
-                </li>
+            <li class="header">{{ trans('menus.backend.sidebar.system') }}</li>
+
+            @role(1)
+            <li class="{{ active_class(Active::checkUriPattern('admin/access/*')) }} treeview">
+                <a href="#">
+                    <i class="fa fa-users"></i>
+                    <span>{{ trans('menus.backend.access.title') }}</span>
+
+                    @if ($pending_approval > 0)
+                        <span class="label label-danger pull-right">{{ $pending_approval }}</span>
+                    @else
+                        <i class="fa fa-angle-left pull-right"></i>
+                    @endif
+                </a>
+
+                <ul class="treeview-menu {{ active_class(Active::checkUriPattern('admin/access/*'), 'menu-open') }}" style="display: none; {{ active_class(Active::checkUriPattern('admin/access/*'), 'display: block;') }}">
+                    <li class="{{ active_class(Active::checkUriPattern('admin/access/user*')) }}">
+                        <a href="{{ route('admin.access.user.index') }}">
+                            <i class="fa fa-circle-o"></i>
+                            <span>{{ trans('labels.backend.access.users.management') }}</span>
+
+                            @if ($pending_approval > 0)
+                                <span class="label label-danger pull-right">{{ $pending_approval }}</span>
+                            @endif
+                        </a>
+                    </li>
+
+                    <li class="{{ active_class(Active::checkUriPattern('admin/access/role*')) }}">
+                        <a href="{{ route('admin.access.role.index') }}">
+                            <i class="fa fa-circle-o"></i>
+                            <span>{{ trans('labels.backend.access.roles.management') }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
             @endauth
 
-            <li class="{{ Active::pattern('admin/log-viewer*') }} treeview">
+            <li class="{{ active_class(Active::checkUriPattern('admin/log-viewer*')) }} treeview">
                 <a href="#">
+                    <i class="fa fa-list"></i>
                     <span>{{ trans('menus.backend.log-viewer.main') }}</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
-                <ul class="treeview-menu {{ Active::pattern('admin/log-viewer*', 'menu-open') }}" style="display: none; {{ Active::pattern('admin/log-viewer*', 'display: block;') }}">
-                    <li class="{{ Active::pattern('admin/log-viewer') }}">
-                        {{ link_to('admin/log-viewer', trans('menus.backend.log-viewer.dashboard')) }}
+                <ul class="treeview-menu {{ active_class(Active::checkUriPattern('admin/log-viewer*'), 'menu-open') }}" style="display: none; {{ active_class(Active::checkUriPattern('admin/log-viewer*'), 'display: block;') }}">
+                    <li class="{{ active_class(Active::checkUriPattern('admin/log-viewer')) }}">
+                        <a href="{{ route('log-viewer::dashboard') }}">
+                            <i class="fa fa-circle-o"></i>
+                            <span>{{ trans('menus.backend.log-viewer.dashboard') }}</span>
+                        </a>
                     </li>
-                    <li class="{{ Active::pattern('admin/log-viewer/logs') }}">
-                        {{ link_to('admin/log-viewer/logs', trans('menus.backend.log-viewer.logs')) }}
+
+                    <li class="{{ active_class(Active::checkUriPattern('admin/log-viewer/logs')) }}">
+                        <a href="{{ route('log-viewer::logs.list') }}">
+                            <i class="fa fa-circle-o"></i>
+                            <span>{{ trans('menus.backend.log-viewer.logs') }}</span>
+                        </a>
                     </li>
                 </ul>
             </li>

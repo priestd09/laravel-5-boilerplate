@@ -5,8 +5,7 @@ namespace App\Http;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 /**
- * Class Kernel
- * @package App\Http
+ * Class Kernel.
  */
 class Kernel extends HttpKernel
 {
@@ -19,6 +18,9 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
     /**
@@ -31,13 +33,14 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\LocaleMiddleware::class,
         ],
 
         'admin' => [
-            'web',
             'auth',
             'access.routeNeedsPermission:view-backend',
             'timeout',
@@ -45,6 +48,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             'throttle:60,1',
+            'bindings',
         ],
     ];
 
@@ -56,17 +60,18 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'can' => \Illuminate\Foundation\Http\Middleware\Authorize::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'timeout' => \App\Http\Middleware\SessionTimeout::class,
+        'timeout'    => \App\Http\Middleware\SessionTimeout::class,
 
-        /**
+        /*
          * Access Middleware
          */
-        'access.routeNeedsRole' => \App\Http\Middleware\RouteNeedsRole::class,
+        'access.routeNeedsRole'       => \App\Http\Middleware\RouteNeedsRole::class,
         'access.routeNeedsPermission' => \App\Http\Middleware\RouteNeedsPermission::class,
     ];
 }

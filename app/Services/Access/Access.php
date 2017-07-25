@@ -2,29 +2,15 @@
 
 namespace App\Services\Access;
 
+use App\Events\Frontend\Auth\UserLoggedIn;
+use App\Events\Frontend\Auth\UserLoggedOut;
+use Illuminate\Contracts\Auth\Authenticatable;
+
 /**
- * Class Access
- * @package App\Services\Access
+ * Class Access.
  */
 class Access
 {
-    /**
-     * Laravel application
-     *
-     * @var \Illuminate\Foundation\Application
-     */
-    public $app;
-
-    /**
-     * Create a new confide instance.
-     *
-     * @param \Illuminate\Foundation\Application $app
-     */
-    public function __construct($app)
-    {
-        $this->app = $app;
-    }
-
     /**
      * Get the currently authenticated user or null.
      */
@@ -34,7 +20,8 @@ class Access
     }
 
     /**
-     * Return if the current session user is a guest or not
+     * Return if the current session user is a guest or not.
+     *
      * @return mixed
      */
     public function guest()
@@ -42,16 +29,19 @@ class Access
         return auth()->guest();
     }
 
-	/**
+    /**
      * @return mixed
      */
     public function logout()
     {
+        event(new UserLoggedOut($this->user()));
+
         return auth()->logout();
     }
 
     /**
-     * Get the currently authenticated user's id
+     * Get the currently authenticated user's id.
+     *
      * @return mixed
      */
     public function id()
@@ -59,18 +49,36 @@ class Access
         return auth()->id();
     }
 
-	/**
-     * @param $id
-     * @return mixed
+    /**
+     * @param Authenticatable $user
+     * @param bool            $remember
      */
-    public function loginUsingId($id) {
-        return auth()->loginUsingId($id);
+    public function login(Authenticatable $user, $remember = false)
+    {
+        $logged_in = auth()->login($user, $remember);
+        event(new UserLoggedIn($this->user()));
+
+        return $logged_in;
     }
 
     /**
-     * Checks if the current user has a Role by its name or id
+     * @param $id
      *
-     * @param  string $role Role name.
+     * @return mixed
+     */
+    public function loginUsingId($id)
+    {
+        $logged_in = auth()->loginUsingId($id);
+        event(new UserLoggedIn($this->user()));
+
+        return $logged_in;
+    }
+
+    /**
+     * Checks if the current user has a Role by its name or id.
+     *
+     * @param string $role Role name.
+     *
      * @return bool
      */
     public function hasRole($role)
@@ -83,19 +91,16 @@ class Access
     }
 
     /**
-     * Checks if the user has either one or more, or all of an array of roles
+     * Checks if the user has either one or more, or all of an array of roles.
+     *
      * @param  $roles
-     * @param  bool     $needsAll
+     * @param bool $needsAll
+     *
      * @return bool
      */
     public function hasRoles($roles, $needsAll = false)
     {
         if ($user = $this->user()) {
-            //If not an array, make a one item array
-            if (!is_array($roles)) {
-                $roles = array($roles);
-            }
-
             return $user->hasRoles($roles, $needsAll);
         }
 
@@ -103,9 +108,10 @@ class Access
     }
 
     /**
-     * Check if the current user has a permission by its name or id
+     * Check if the current user has a permission by its name or id.
      *
-     * @param  string $permission Permission name or id.
+     * @param string $permission Permission name or id.
+     *
      * @return bool
      */
     public function allow($permission)
@@ -118,19 +124,16 @@ class Access
     }
 
     /**
-     * Check an array of permissions and whether or not all are required to continue
+     * Check an array of permissions and whether or not all are required to continue.
+     *
      * @param  $permissions
      * @param  $needsAll
+     *
      * @return bool
      */
     public function allowMultiple($permissions, $needsAll = false)
     {
         if ($user = $this->user()) {
-            //If not an array, make a one item array
-            if (!is_array($permissions)) {
-                $permissions = array($permissions);
-            }
-
             return $user->allowMultiple($permissions, $needsAll);
         }
 
@@ -139,6 +142,7 @@ class Access
 
     /**
      * @param  $permission
+     *
      * @return bool
      */
     public function hasPermission($permission)
@@ -149,6 +153,7 @@ class Access
     /**
      * @param  $permissions
      * @param  $needsAll
+     *
      * @return bool
      */
     public function hasPermissions($permissions, $needsAll = false)

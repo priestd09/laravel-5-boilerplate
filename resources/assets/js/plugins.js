@@ -13,8 +13,8 @@ function addDeleteForms() {
         if (! $(this).find('form').length > 0)
             return "\n" +
                 "<form action='" + $(this).attr('href') + "' method='POST' name='delete_item' style='display:none'>\n" +
-                "   <input type='hidden' name='_method' value='" + $(this).attr('data-method') + "'>\n" +
-                "   <input type='hidden' name='_token' value='" + $('meta[name="_token"]').attr('content') + "'>\n" +
+                "<input type='hidden' name='_method' value='" + $(this).attr('data-method') + "'>\n" +
+                "<input type='hidden' name='_token' value='" + $('meta[name="csrf-token"]').attr('content') + "'>\n" +
                 "</form>\n";
         else
             return "";
@@ -28,13 +28,21 @@ function addDeleteForms() {
  * Place any jQuery/helper plugins in here.
  */
 $(function(){
-    /**
-     * Place the CSRF token as a header on all pages for access in AJAX requests
-     */
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-        }
+    let $loading = $('.loader');
+
+    $(document).ajaxStart(function () {
+        $loading.show();
+    }).ajaxError(function (event, jqxhr, settings, thrownError) {
+        $loading.hide();
+        location.reload();
+    }).ajaxStop(function () {
+        $loading.hide();
+    }).ajaxComplete(function () {
+        /**
+         * This is for delete buttons that are loaded via AJAX in datatables, they will not work right
+         * without this block of code
+         */
+        addDeleteForms();
     });
 
     /**
@@ -43,24 +51,32 @@ $(function(){
     addDeleteForms();
 
     /**
-     * This is for delete buttons that are loaded via AJAX in datatables, they will not work right
-     * without this block of code
+     * Place the CSRF token as a header on all pages for access in AJAX requests
      */
-    $(document).ajaxComplete(function(){
-        addDeleteForms();
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
+
+    /**
+     * Bind all bootstrap tooltips & popovers
+     */
+    $("[data-toggle='tooltip']").tooltip();
+    $("[data-toggle='popover']").popover();
 
     /**
      * Generic confirm form delete using Sweet Alert
      */
     $('body').on('submit', 'form[name=delete_item]', function(e){
         e.preventDefault();
-        var form = this;
-        var link = $('a[data-method="delete"]');
-        var cancel = (link.attr('data-trans-button-cancel')) ? link.attr('data-trans-button-cancel') : "Cancel";
-        var confirm = (link.attr('data-trans-button-confirm')) ? link.attr('data-trans-button-confirm') : "Yes, delete";
-        var title = (link.attr('data-trans-title')) ? link.attr('data-trans-title') : "Warning";
-        var text = (link.attr('data-trans-text')) ? link.attr('data-trans-text') : "Are you sure you want to delete this item?";
+
+        let form = this,
+            link = $('a[data-method="delete"]'),
+            cancel = (link.attr('data-trans-button-cancel')) ? link.attr('data-trans-button-cancel') : "Cancel",
+            confirm = (link.attr('data-trans-button-confirm')) ? link.attr('data-trans-button-confirm') : "Yes, delete",
+            title = (link.attr('data-trans-title')) ? link.attr('data-trans-title') : "Warning",
+            text = (link.attr('data-trans-text')) ? link.attr('data-trans-text') : "Are you sure you want to delete this item?";
 
         swal({
             title: title,
@@ -74,22 +90,33 @@ $(function(){
             if (confirmed)
                 form.submit();
         });
-    });
+    }).on('click', 'a[name=confirm_item]', function(e){
+        /**
+         * Generic 'are you sure' confirm box
+         */
+        e.preventDefault();
 
-    /**
-     * Bind all bootstrap tooltips
-     */
-    $("[data-toggle=\"tooltip\"]").tooltip();
+        let link = $(this),
+            title = (link.attr('data-trans-title')) ? link.attr('data-trans-title') : "Are you sure you want to do this?",
+            cancel = (link.attr('data-trans-button-cancel')) ? link.attr('data-trans-button-cancel') : "Cancel",
+            confirm = (link.attr('data-trans-button-confirm')) ? link.attr('data-trans-button-confirm') : "Continue";
 
-    /**
-     * Bind all bootstrap popovers
-     */
-    $("[data-toggle=\"popover\"]").popover();
-
-    /**
-     * This closes the popover when its clicked away from
-     */
-    $('body').on('click', function (e) {
+        swal({
+            title: title,
+            type: "info",
+            showCancelButton: true,
+            cancelButtonText: cancel,
+            confirmButtonColor: "#3C8DBC",
+            confirmButtonText: confirm,
+            closeOnConfirm: true
+        }, function(confirmed) {
+            if (confirmed)
+                window.location = link.attr('href');
+        });
+    }).on('click', function (e) {
+        /**
+         * This closes popovers when clicked away from
+         */
         $('[data-toggle="popover"]').each(function () {
             if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
                 $(this).popover('hide');

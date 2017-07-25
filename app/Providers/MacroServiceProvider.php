@@ -2,12 +2,11 @@
 
 namespace App\Providers;
 
-use App\Services\Macros\Macros;
+use App\Helpers\Macros\Macros;
 use Collective\Html\HtmlServiceProvider;
 
 /**
- * Class MacroServiceProvider
- * @package App\Providers
+ * Class MacroServiceProvider.
  */
 class MacroServiceProvider extends HtmlServiceProvider
 {
@@ -31,7 +30,8 @@ class MacroServiceProvider extends HtmlServiceProvider
         parent::register();
 
         $this->app->singleton('form', function ($app) {
-            $form = new Macros($app['html'], $app['url'], $app['view'], $app['session.store']->getToken());
+            $form = new Macros($app['html'], $app['url'], $app['view'], $app['session.store']->token());
+
             return $form->setSessionStore($app['session.store']);
         });
     }

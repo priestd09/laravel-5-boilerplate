@@ -1,4 +1,4 @@
-@extends ('backend.layouts.master')
+@extends ('backend.layouts.app')
 
 @section ('title', trans('labels.backend.access.users.management') . ' | ' . trans('labels.backend.access.users.create'))
 
@@ -17,16 +17,25 @@
                 <h3 class="box-title">{{ trans('labels.backend.access.users.create') }}</h3>
 
                 <div class="box-tools pull-right">
-                    @include('backend.access.includes.partials.header-buttons')
+                    @include('backend.access.includes.partials.user-header-buttons')
                 </div><!--box-tools pull-right-->
             </div><!-- /.box-header -->
 
             <div class="box-body">
                 <div class="form-group">
-                    {{ Form::label('name', trans('validation.attributes.backend.access.users.name'), ['class' => 'col-lg-2 control-label']) }}
+                    {{ Form::label('first_name', trans('validation.attributes.backend.access.users.first_name'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::text('name', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.users.name')]) }}
+                        {{ Form::text('first_name', null, ['class' => 'form-control', 'maxlength' => '191', 'required' => 'required', 'autofocus' => 'autofocus', 'placeholder' => trans('validation.attributes.backend.access.users.first_name')]) }}
+                    </div><!--col-lg-10-->
+                </div><!--form control-->
+
+                <div class="form-group">
+                    {{ Form::label('last_name', trans('validation.attributes.backend.access.users.last_name'),
+                     ['class' => 'col-lg-2 control-label']) }}
+
+                    <div class="col-lg-10">
+                        {{ Form::text('last_name', null, ['class' => 'form-control', 'maxlength' => '191', 'required' => 'required', 'placeholder' => trans('validation.attributes.backend.access.users.last_name')]) }}
                     </div><!--col-lg-10-->
                 </div><!--form control-->
 
@@ -34,23 +43,23 @@
                     {{ Form::label('email', trans('validation.attributes.backend.access.users.email'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::text('email', null, ['class' => 'form-control', 'placeholder' => trans('validation.attributes.backend.access.users.email')]) }}
+                        {{ Form::email('email', null, ['class' => 'form-control', 'maxlength' => '191', 'required' => 'required', 'placeholder' => trans('validation.attributes.backend.access.users.email')]) }}
                     </div><!--col-lg-10-->
                 </div><!--form control-->
 
                 <div class="form-group">
-                    {{ Form::label('password', trans('validation.attributes.backend.access.users.password'), ['class' => 'col-lg-2 control-label', 'placeholder' => trans('validation.attributes.backend.access.users.password')]) }}
+                    {{ Form::label('password', trans('validation.attributes.backend.access.users.password'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::password('password', ['class' => 'form-control']) }}
+                        {{ Form::password('password', ['class' => 'form-control', 'required' => 'required', 'placeholder' => trans('validation.attributes.backend.access.users.password')]) }}
                     </div><!--col-lg-10-->
                 </div><!--form control-->
 
                 <div class="form-group">
-                    {{ Form::label('password_confirmation', trans('validation.attributes.backend.access.users.password_confirmation'), ['class' => 'col-lg-2 control-label', 'placeholder' => trans('validation.attributes.backend.access.users.password_confirmation')]) }}
+                    {{ Form::label('password_confirmation', trans('validation.attributes.backend.access.users.password_confirmation'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-10">
-                        {{ Form::password('password_confirmation', ['class' => 'form-control']) }}
+                        {{ Form::password('password_confirmation', ['class' => 'form-control', 'required' => 'required', 'placeholder' => trans('validation.attributes.backend.access.users.password_confirmation')]) }}
                     </div><!--col-lg-10-->
                 </div><!--form control-->
 
@@ -70,23 +79,25 @@
                     </div><!--col-lg-1-->
                 </div><!--form control-->
 
-                <div class="form-group">
-                    <label class="col-lg-2 control-label">{{ trans('validation.attributes.backend.access.users.send_confirmation_email') }}<br/>
-                        <small>{{ trans('strings.backend.access.users.if_confirmed_off') }}</small>
-                    </label>
+                @if (! config('access.users.requires_approval'))
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">{{ trans('validation.attributes.backend.access.users.send_confirmation_email') }}<br/>
+                            <small>{{ trans('strings.backend.access.users.if_confirmed_off') }}</small>
+                        </label>
 
-                    <div class="col-lg-1">
-                        {{ Form::checkbox('confirmation_email', '1') }}
-                    </div><!--col-lg-1-->
-                </div><!--form control-->
+                        <div class="col-lg-1">
+                            {{ Form::checkbox('confirmation_email', '1') }}
+                        </div><!--col-lg-1-->
+                    </div><!--form control-->
+                @endif
 
                 <div class="form-group">
-                    {{ Form::label('status', trans('validation.attributes.backend.access.users.associated_roles'), ['class' => 'col-lg-2 control-label']) }}
+                    {{ Form::label('associated_roles', trans('validation.attributes.backend.access.users.associated_roles'), ['class' => 'col-lg-2 control-label']) }}
 
                     <div class="col-lg-3">
                         @if (count($roles) > 0)
                             @foreach($roles as $role)
-                                <input type="checkbox" value="{{ $role->id }}" name="assignees_roles[]" id="role-{{ $role->id }}" /> <label for="role-{{ $role->id }}">{{ $role->name }}</label>
+                                <input type="checkbox" value="{{ $role->id }}" name="assignees_roles[{{ $role->id }}]" id="role-{{ $role->id }}" {{ is_array(old('assignees_roles')) && in_array($role->id, old('assignees_roles')) ? 'checked' : '' }} /> <label for="role-{{ $role->id }}">{{ $role->name }}</label>
                                 <a href="#" data-role="role_{{ $role->id }}" class="show-permissions small">
                                     (
                                         <span class="show-text">{{ trans('labels.general.show') }}</span>
@@ -134,8 +145,8 @@
         </div><!--box-->
 
     {{ Form::close() }}
-@stop
+@endsection
 
-@section('after-scripts-end')
+@section('after-scripts')
     {{ Html::script('js/backend/access/users/script.js') }}
-@stop
+@endsection

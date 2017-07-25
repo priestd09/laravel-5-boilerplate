@@ -1,10 +1,10 @@
-@extends ('backend.layouts.master')
+@extends ('backend.layouts.app')
 
 @section ('title', trans('labels.backend.access.users.management') . ' | ' . trans('labels.backend.access.users.deleted'))
 
-@section('after-styles-end')
-    {{ Html::style("css/backend/plugin/datatables/dataTables.bootstrap.min.css") }}
-@stop
+@section('after-styles')
+    {{ Html::style("https://cdn.datatables.net/v/bs/dt-1.10.15/datatables.min.css") }}
+@endsection
 
 @section('page-header')
     <h1>
@@ -19,7 +19,7 @@
             <h3 class="box-title">{{ trans('labels.backend.access.users.deleted') }}</h3>
 
             <div class="box-tools pull-right">
-                @include('backend.access.includes.partials.header-buttons')
+                @include('backend.access.includes.partials.user-header-buttons')
             </div><!--box-tools pull-right-->
         </div><!-- /.box-header -->
 
@@ -28,8 +28,8 @@
                 <table id="users-table" class="table table-condensed table-hover">
                     <thead>
                         <tr>
-                            <th>{{ trans('labels.backend.access.users.table.id') }}</th>
-                            <th>{{ trans('labels.backend.access.users.table.name') }}</th>
+                            <th>{{ trans('labels.backend.access.users.table.last_name') }}</th>
+                            <th>{{ trans('labels.backend.access.users.table.first_name') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.email') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.confirmed') }}</th>
                             <th>{{ trans('labels.backend.access.users.table.roles') }}</th>
@@ -42,31 +42,37 @@
             </div><!--table-responsive-->
         </div><!-- /.box-body -->
     </div><!--box-->
-@stop
+@endsection
 
-@section('after-scripts-end')
-    {{ Html::script("js/backend/plugin/datatables/jquery.dataTables.min.js") }}
-    {{ Html::script("js/backend/plugin/datatables/dataTables.bootstrap.min.js") }}
+@section('after-scripts')
+    {{ Html::script("https://cdn.datatables.net/v/bs/dt-1.10.15/datatables.min.js") }}
+    {{ Html::script("js/backend/plugin/datatables/dataTables-extend.js") }}
 
 	<script>
 		$(function() {
             $('#users-table').DataTable({
-                processing: true,
+                dom: 'lfrtip',
+                processing: false,
                 serverSide: true,
+                autoWidth: false,
                 ajax: {
                     url: '{{ route("admin.access.user.get") }}',
-                    type: 'get',
-                    data: {status: false, trashed: true}
+                    type: 'post',
+                    data: {status: false, trashed: true},
+                    error: function (xhr, err) {
+                        if (err === 'parsererror')
+                            location.reload();
+                    }
                 },
                 columns: [
-                    {data: 'id', name: 'id'},
-                    {data: 'name', name: 'name'},
-                    {data: 'email', name: 'email'},
-                    {data: 'confirmed', name: 'confirmed'},
-                    {data: 'roles', name: 'roles'},
-                    {data: 'created_at', name: 'created_at'},
-                    {data: 'updated_at', name: 'updated_at'},
-                    {data: 'actions', name: 'actions'}
+                    {data: 'last_name', name: '{{config('access.users_table')}}.last_name'},
+                    {data: 'first_name', name: '{{config('access.users_table')}}.first_name'},
+                    {data: 'email', name: '{{config('access.users_table')}}.email'},
+                    {data: 'confirmed', name: '{{config('access.users_table')}}.confirmed'},
+                    {data: 'roles', name: '{{config('access.roles_table')}}.name', sortable: false},
+                    {data: 'created_at', name: '{{config('access.users_table')}}.created_at'},
+                    {data: 'updated_at', name: '{{config('access.users_table')}}.updated_at'},
+                    {data: 'actions', name: 'actions', searchable: false, sortable: false}
                 ],
                 order: [[0, "asc"]],
                 searchDelay: 500
@@ -90,9 +96,7 @@
                         window.location.href = linkURL;
                     }
                 });
-            });
-
-            $("body").on("click", "a[name='restore_user']", function(e) {
+            }).on("click", "a[name='restore_user']", function(e) {
                 e.preventDefault();
                 var linkURL = $(this).attr("href");
 
@@ -113,4 +117,4 @@
             });
 		});
 	</script>
-@stop
+@endsection
